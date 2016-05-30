@@ -6,17 +6,30 @@ $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require 'test/unit'
 require 'test/unit/rr'
 
+require 'json'
+
 require 'tumugi'
 
 Dir.mkdir('tmp') unless Dir.exist?('tmp')
 
 def credential
   pkey = ENV['PRIVATE_KEY'].gsub(/\\n/, "\n")
-  {
+  OpenStruct.new({
     project_id: ENV['PROJECT_ID'],
     client_email: ENV['CLIENT_EMAIL'],
     private_key: pkey
-  }
+  })
+end
+
+def credential_file
+  file = 'tmp/credential.json'
+  pkey = ENV['PRIVATE_KEY'].gsub(/\\n/, "\n")
+  File.write(file, JSON.generate({
+    project_id: ENV['PROJECT_ID'],
+    client_email: ENV['CLIENT_EMAIL'],
+    private_key: pkey
+  }))
+  OpenStruct.new(private_key_file: file)
 end
 
 Tumugi.configure do |config|

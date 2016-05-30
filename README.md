@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/tumugi/tumugi-plugin-google_drive.svg?branch=master)](https://travis-ci.org/tumugi/tumugi-plugin-google_drive) [![Code Climate](https://codeclimate.com/github/tumugi/tumugi-plugin-google_drive/badges/gpa.svg)](https://codeclimate.com/github/tumugi/tumugi-plugin-google_drive) [![Coverage Status](https://coveralls.io/repos/github/tumugi/tumugi-plugin-google_drive/badge.svg?branch=master)](https://coveralls.io/github/tumugi/tumugi-plugin-google_drive?branch=master) [![Gem Version](https://badge.fury.io/rb/tumugi-plugin-google_drive.svg)](https://badge.fury.io/rb/tumugi-plugin-google_drive)
+
 # tumugi-plugin-google_drive
 
 [tumugi](https://github.com/tumugi/tumugi) plugin for Google Drive.
@@ -27,6 +29,55 @@ $ gem install tumugi-plugin-google_drive
 ### Tumugi::Plugin::GoogleDriveFileTarget
 
 This target represent file on Googl Drive.
+This target has following parameters.
+
+- name
+  - Filename **string**
+- parents
+  - Parent folder ID **string** or **array of string**
+
+Tumugi workflow file using this target is like this:
+
+```rb
+task :task1 do
+  param :day, type: :time, auto_bind: true, required: true
+  output do
+    target(:google_drive_file,
+          name: "test_#{day.strftime('%Y%m%d')}.txt",
+          parents: "xyz")
+  end
+  run do
+    log 'task1#run'
+    output.open('w') {|f| f.puts('done') }
+  end
+end
+```
+
+### Config Section
+
+tumugi-plugin-google_drive provide config section named "google_drive" which can specified Google Drive autenticaion info.
+
+#### Authenticate by client_email and private_key
+
+```rb
+Tumugi.config do |config|
+  config.section("google_drive") do |section|
+    section.project_id = "xxx"
+    section.client_email = "yyy@yyy.iam.gserviceaccount.com"
+    section.private_key = "zzz"
+  end
+end
+```
+
+#### Authenticate by JSON key file
+
+```rb
+Tumugi.configure do |config|
+  config.section("google_drive") do |section|
+    section.private_key_file = "/path/to/key.json"
+  end
+end
+```
 
 ## Development
 
