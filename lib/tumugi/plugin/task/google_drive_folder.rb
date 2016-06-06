@@ -11,15 +11,15 @@ module Tumugi
       param :parent, type: :string
 
       def output
-        Tumugi::Plugin::GoogleDriveFolderTarget.new(folder_id: folder_id, name: name, parents: parent.nil? ? nil : [parent])
+        @output ||= Tumugi::Plugin::GoogleDriveFolderTarget.new(folder_id: folder_id, name: name, parents: parent.nil? ? nil : [parent])
       end
 
       def run
-        if _output.exist?
-          log "skip: #{_output} is already exists"
+        if output.exist?
+          log "skip: #{output} is already exists"
         else
-          log "create folder: #{_output}"
-          _output.fs.mkdir(name, folder_id: _output.folder_id, parents: _output.parents)
+          log "create folder: #{output}"
+          output.fs.mkdir(name, folder_id: output.folder_id, parents: output.parents)
         end
       end
     end
