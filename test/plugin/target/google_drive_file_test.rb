@@ -3,8 +3,7 @@ require 'tumugi/plugin/target/google_drive_file'
 
 class Tumugi::Plugin::GoogleDriveFileTargetTest < Test::Unit::TestCase
   setup do
-    @target = Tumugi::Plugin::GoogleDriveFileTarget.new(name: 'test')
-    @file1 = @target.fs.put_string('test', 'file1.txt')
+    @target = Tumugi::Plugin::GoogleDriveFileTarget.new(name: 'file1.txt')
   end
 
   sub_test_case "initialize" do
@@ -34,13 +33,25 @@ class Tumugi::Plugin::GoogleDriveFileTargetTest < Test::Unit::TestCase
   end
 
   test "exist?" do
-    readable_target = Tumugi::Plugin::GoogleDriveFileTarget.new(file_id: @file1.id)
+    file1 = @target.fs.put_string('test', 'file1.txt')
+    readable_target = Tumugi::Plugin::GoogleDriveFileTarget.new(file_id: file1.id)
     assert_true(readable_target.exist?)
     assert_false(@target.exist?)
   end
 
   sub_test_case "open" do
     test "write and read" do
+      @target.open("w") do |f|
+        f.puts("test")
+      end
+      @target.open("r") do |f|
+        assert_equal("test\n", f.read)
+      end
+    end
+
+    test "write and read with parents" do
+      @target = Tumugi::Plugin::GoogleDriveFileTarget.new(name: 'file1.txt', parents: '0B62A9ARqgG8zWS1jcUQ3SkhQdzA')
+
       @target.open("w") do |f|
         f.puts("test")
       end

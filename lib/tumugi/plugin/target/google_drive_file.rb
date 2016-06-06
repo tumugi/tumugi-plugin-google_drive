@@ -28,7 +28,7 @@ module Tumugi
         if mode.include? 'r'
           fs.download(file_id, mode: mode, &block)
         elsif mode.include? 'w'
-          file = Tumugi::Plugin::GoogleDrive::AtomicFile.new(name, fs)
+          file = Tumugi::Plugin::GoogleDrive::AtomicFile.new(name, fs, file_id: @file_id, parents: @parents)
           file.open(&block)
           @file_id = file.id
         else
