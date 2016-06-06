@@ -1,6 +1,8 @@
 require 'google/apis/drive_v3'
 require 'tumugi/error'
 
+Tumugi::Config.register_section('google_drive', :project_id, :client_email, :private_key, :private_key_file)
+
 module Tumugi
   module Plugin
     module GoogleDrive
@@ -30,10 +32,12 @@ module Tumugi
           process_error($!)
         end
 
-        def mkdir(name)
+        def mkdir(name, folder_id: nil, parents: nil)
           file_metadata = Google::Apis::DriveV3::File.new({
             name: name,
-            mime_type: MIME_TYPE_FOLDER
+            mime_type: MIME_TYPE_FOLDER,
+            parents: parents,
+            id: folder_id
           })
           file = client.create_file(file_metadata, options: request_options)
           wait_until { exist?(file.id) }
