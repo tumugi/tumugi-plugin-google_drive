@@ -13,6 +13,7 @@ class Tumugi::Plugin::GoogleDriveFileTargetTest < Test::Unit::TestCase
       assert_equal('test', target.name)
       assert_nil(target.parents)
       assert_match(/^[0-9a-zA-Z]{28}$/, target.file_id)
+      assert_equal(target.path, target.file_id)
     end
 
     test "with name and parents" do
@@ -20,6 +21,7 @@ class Tumugi::Plugin::GoogleDriveFileTargetTest < Test::Unit::TestCase
       assert_equal('test', target.name)
       assert_equal('parent', target.parents)
       assert_match(/^[0-9a-zA-Z]{28}$/, target.file_id)
+      assert_equal(target.path, target.file_id)
     end
 
     test "with name and parents and file_id" do
@@ -27,6 +29,7 @@ class Tumugi::Plugin::GoogleDriveFileTargetTest < Test::Unit::TestCase
       assert_equal('test', target.name)
       assert_equal('parent', target.parents)
       assert_equal('a'*28, target.file_id)
+      assert_equal(target.path, target.file_id)
     end
   end
 

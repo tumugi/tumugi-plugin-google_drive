@@ -1,11 +1,12 @@
 require 'tumugi/config'
 require 'tumugi/plugin'
+require 'tumugi/plugin/file_system_target'
 require 'tumugi/plugin/google_drive/atomic_file'
 require 'tumugi/plugin/google_drive/file_system'
 
 module Tumugi
   module Plugin
-    class GoogleDriveFileTarget < Tumugi::Target
+    class GoogleDriveFileTarget < Tumugi::Plugin::FileSystemTarget
       Tumugi::Plugin.register_target('google_drive_file', self)
       Tumugi::Config.register_section('google_drive', :project_id, :client_email, :private_key, :private_key_file)
 
@@ -16,7 +17,7 @@ module Tumugi
         @file_id = file_id || self.fs.generate_file_id
         @name = name
         @parents = parents
-        log "file_id='#{file_id}', name='#{name}', parents='#{parents}'"
+        super(@file_id)
       end
 
       def fs
