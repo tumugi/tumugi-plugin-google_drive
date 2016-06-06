@@ -8,7 +8,6 @@ module Tumugi
   module Plugin
     class GoogleDriveFileTarget < Tumugi::Plugin::FileSystemTarget
       Tumugi::Plugin.register_target('google_drive_file', self)
-      Tumugi::Config.register_section('google_drive', :project_id, :client_email, :private_key, :private_key_file)
 
       attr_reader :file_id, :name, :parents
 
@@ -37,11 +36,13 @@ module Tumugi
       end
 
       def exist?
-        if file_id.nil?
-          false
-        else
-          fs.exist?(file_id)
-        end
+        fs.exist?(file_id)
+      end
+
+      def to_s
+        s = "file_id: #{file_id}, name: #{name}"
+        s += ", parents: #{parents}" if parents
+        s
       end
     end
   end
