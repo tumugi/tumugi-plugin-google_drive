@@ -40,6 +40,6 @@ class Tumugi::Plugin::GoogleDriveFolderTaskTest < Test::Unit::TestCase
   test "#run" do
     task = @klass.new
     task.run
-    assert_true(task._output.exist?)
+    assert_true(task.output.exist?)
   end
 end

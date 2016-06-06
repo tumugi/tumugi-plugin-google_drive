@@ -31,8 +31,10 @@ $ gem install tumugi-plugin-google_drive
 This target represent file on Googl Drive.
 This target has following parameters.
 
-- name
+- name (required)
   - Filename **string**
+- file_id
+  - File ID **string**
 - parents
   - Parent folder ID **string** or **array of string**
 
@@ -49,6 +51,34 @@ task :task1 do
   run do
     log 'task1#run'
     output.open('w') {|f| f.puts('done') }
+  end
+end
+```
+
+### Tumugi::Plugin::GoogleDriveFolderTarget
+
+This target represent folder on Googl Drive.
+This target has following parameters.
+
+- name (required)
+  - Folder name **string**
+- folder_id
+  - Folder ID **string**
+- parents
+  - Parent folder ID **string** or **array of string**
+
+### Tumugi::Plugin::GoogleDriveFolderTask
+
+This task create a folder on Googl Drive.
+Tumugi workflow file using this task is like this:
+
+```rb
+task :task1, type: :google_drive_folder do
+  param :day, type: :time, auto_bind: true, required: true
+  output do
+    target(:google_drive_folder,
+          name: "test_#{day.strftime('%Y%m%d')}.txt",
+          parents: "xyz")
   end
 end
 ```
