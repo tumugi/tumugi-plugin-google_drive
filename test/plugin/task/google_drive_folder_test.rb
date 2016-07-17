@@ -4,7 +4,7 @@ require 'tumugi/plugin/task/google_drive_folder'
 class Tumugi::Plugin::GoogleDriveFolderTaskTest < Test::Unit::TestCase
   setup do
     @klass = Class.new(Tumugi::Plugin::GoogleDriveFolderTask)
-    @klass.param_set :name, 'folder1'
+    @klass.set :name, 'folder1'
   end
 
   sub_test_case "parameters" do
@@ -20,7 +20,7 @@ class Tumugi::Plugin::GoogleDriveFolderTaskTest < Test::Unit::TestCase
     })
     test "raise error when required parameter is not set" do |params|
       params.each do |param|
-        @klass.param_set(param, nil)
+        @klass.set(param, nil)
       end
       assert_raise(Tumugi::ParameterError) do
         @klass.new

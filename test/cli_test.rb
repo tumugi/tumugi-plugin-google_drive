@@ -1,17 +1,25 @@
 require_relative './test_helper'
 require 'tumugi/cli'
 
-class Tumugi::Plugin::GoogleDriveCLITest < Test::Unit::TestCase
+class Tumugi::Plugin::GoogleDriveCLITest < Tumugi::Test::TumugiTestCase
   examples = {
     'example' => ['example.rb', 'task1'],
   }
 
-  def invoke(file, task, options)
-    Tumugi::CLI.new.invoke(:run_, [task], options.merge(file: "./examples/#{file}", quiet: true))
+  setup do
+    system('rm -rf tmp/*')
   end
 
-  data(examples)
-  test 'success' do |(file, task)|
-    assert_true(invoke(file, task, worker: 4, params: { 'day' => '2016-05-01' }, config: "./examples/tumugi_config_example.rb"))
+  data do
+    data_set = {}
+    examples.each do |k, v|
+      [1, 2, 8].each do |n|
+        data_set["#{k}_workers_#{n}"] = (v.dup << n)
+      end
+    end
+    data_set
+  end
+  test 'success' do |(file, task, worker)|
+    assert_run_success("examples/#{file}", task, workers: worker, params: { "day" => "2016-05-01" }, config: "./examples/tumugi_config_example.rb")
   end
 end
