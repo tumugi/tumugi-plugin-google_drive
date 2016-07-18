@@ -10,9 +10,11 @@ raise "ENV['PRIVATE_KEY'] must be set" unless ENV.key?('PRIVATE_KEY')
 require 'test/unit'
 require 'test/unit/rr'
 
-require 'json'
-
 require 'tumugi'
+require 'tumugi/test/helper'
+include Tumugi::Test::Helpers
+
+require 'json'
 
 Dir.mkdir('tmp') unless Dir.exist?('tmp')
 
