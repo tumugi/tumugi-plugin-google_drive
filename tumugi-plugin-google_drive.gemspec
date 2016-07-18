@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name          = "tumugi-plugin-google_drive"
-  spec.version       = "0.1.0"
+  spec.version       = "0.2.0"
   spec.authors       = ["Kazuyuki Honda"]
   spec.email         = ["hakobera@gmail.com"]
 
@@ -28,5 +28,4 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "test-unit", "~> 3.1"
   spec.add_development_dependency "test-unit-rr"
   spec.add_development_dependency "coveralls"
-  spec.add_development_dependency "github_changelog_generator"
 end
