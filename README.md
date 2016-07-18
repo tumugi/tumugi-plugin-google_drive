@@ -1,8 +1,8 @@
 [![Build Status](https://travis-ci.org/tumugi/tumugi-plugin-google_drive.svg?branch=master)](https://travis-ci.org/tumugi/tumugi-plugin-google_drive) [![Code Climate](https://codeclimate.com/github/tumugi/tumugi-plugin-google_drive/badges/gpa.svg)](https://codeclimate.com/github/tumugi/tumugi-plugin-google_drive) [![Coverage Status](https://coveralls.io/repos/github/tumugi/tumugi-plugin-google_drive/badge.svg?branch=master)](https://coveralls.io/github/tumugi/tumugi-plugin-google_drive?branch=master) [![Gem Version](https://badge.fury.io/rb/tumugi-plugin-google_drive.svg)](https://badge.fury.io/rb/tumugi-plugin-google_drive)
 
-# tumugi-plugin-google_drive
+# Google Drive plugin for [tumugi](https://github.com/tumugi/tumugi)
 
-[tumugi](https://github.com/tumugi/tumugi) plugin for Google Drive.
+tumugi-plugin-google_drive is a plugin for integrate [Google Drive](https://www.google.com/intl/en/drive/) and [tumugi](https://github.com/tumugi/tumugi).
 
 ## Installation
 
@@ -12,75 +12,84 @@ Add this line to your application's Gemfile:
 gem 'tumugi-plugin-google_drive'
 ```
 
-And then execute:
+And then execute `bundle install`
 
-```sh
-$ bundle
-```
-
-Or install it yourself as:
-
-```sh
-$ gem install tumugi-plugin-google_drive
-```
-
-## Component
+## Target
 
 ### Tumugi::Plugin::GoogleDriveFileTarget
 
-This target represent file on Googl Drive.
-This target has following parameters.
+`GoogleDriveFileTarget` represents file on Googl Drive.
 
-- name (required)
-  - Filename **string**
-- file_id
-  - File ID **string**
-- parents
-  - Parent folder ID **string** or **array of string**
+#### Parameters
 
-Tumugi workflow file using this target is like this:
+| name    | type                   | required? | default | description         |
+|---------|------------------------|-----------|---------|---------------------|
+| name    | string                 | required  |         | Filename            |
+| file_id | string                 | optional  |         | File ID             |
+| parents | string or string array | optional  |         | Parent folder ID(s) |
+
+#### Examples
+
+Create Google Drive file in folder named `xyz`, which content is "done"
 
 ```rb
 task :task1 do
   param :day, type: :time, auto_bind: true, required: true
+
   output do
     target(:google_drive_file,
           name: "test_#{day.strftime('%Y%m%d')}.txt",
           parents: "xyz")
   end
+
   run do
-    log 'task1#run'
-    output.open('w') {|f| f.puts('done') }
+    log "task1#run"
+    output.open("w") {|f| f.puts("done") }
   end
 end
 ```
 
 ### Tumugi::Plugin::GoogleDriveFolderTarget
 
-This target represent folder on Googl Drive.
-This target has following parameters.
+`GoogleDriveFolderTarget` represents folder on Googl Drive.
 
-- name (required)
-  - Folder name **string**
-- folder_id
-  - Folder ID **string**
-- parents
-  - Parent folder ID **string** or **array of string**
+#### Parameters
+
+| name      | type                   | required? | default | description         |
+|-----------|------------------------|-----------|---------|---------------------|
+| name      | string                 | required  |         | Filename            |
+| folder_id | string                 | optional  |         | Folder ID           |
+| parents   | string or string array | optional  |         | Parent folder ID(s) |
+
+## Task
 
 ### Tumugi::Plugin::GoogleDriveFolderTask
 
-This task create a folder on Googl Drive.
-Tumugi workflow file using this task is like this:
+`GoogleDriveFolderTask` create a folder on Googl Drive.
+Return value of `output` must be instance of `Tumugi::Plugin::GoogleDriveFolderTarget`
+
+#### Parameters
+
+| name      | type                   | required? | default | description         |
+|-----------|------------------------|-----------|---------|---------------------|
+| name      | string                 | required  |         | Filename            |
+| folder_id | string                 | optional  |         | Folder ID           |
+| parents   | string or string array | optional  |         | Parent folder ID(s) |
+
+#### Examples
 
 ```rb
 task :task1, type: :google_drive_folder do
   param :day, type: :time, auto_bind: true, required: true
-  output do
-    target(:google_drive_folder,
-          name: "test_#{day.strftime('%Y%m%d')}.txt",
-          parents: "xyz")
-  end
+  name { "test_#{day.strftime('%Y%m%d')}.txt" }
+  parents "xyz"
 end
+```
+
+Run this workflow via:
+
+```sh
+$ bundle exec tumugi run -f workflow.rb -p day:2016-07-01 task1
 ```
 
 ### Config Section
@@ -111,11 +120,11 @@ end
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+After checking out the repo, run `bundle install` to install dependencies. Then, run `bundle exec rake test` to run the tests.
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/tumugi/ttumugi-plugin-google_drive
+Bug reports and pull requests are welcome on GitHub at https://github.com/tumugi/tumugi-plugin-google_drive
 
 ## License
 
