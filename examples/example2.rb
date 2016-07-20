@@ -15,6 +15,6 @@ task :task1 do
 end
 
 task :folder, type: :google_drive_folder do
-  param :day, type: :time, auto_bind: true, required: true
-  name { "folder_#{day.strftime('%Y%m%d%H%M')}" }
+  folder_id "0B7nGp5dHlbK7akttY0haVUNSeGM"
+  name "folder"
 end

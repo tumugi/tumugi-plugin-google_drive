@@ -4,10 +4,12 @@ require 'tumugi/cli'
 class Tumugi::Plugin::GoogleDriveCLITest < Tumugi::Test::TumugiTestCase
   examples = {
     'example' => ['example.rb', 'task1'],
+    'example2' => ['example2.rb', 'task1'],
   }
 
   setup do
     system('rm -rf tmp/*')
+    sleep(1)
   end
 
   data do
@@ -20,6 +22,6 @@ class Tumugi::Plugin::GoogleDriveCLITest < Tumugi::Test::TumugiTestCase
     data_set
   end
   test 'success' do |(file, task, worker)|
-    assert_run_success("examples/#{file}", task, workers: worker, params: { "day" => "2016-05-01" }, config: "./examples/tumugi_config_example.rb")
+    assert_run_success("examples/#{file}", task, quiet: false, workers: worker, params: { "day" => "2016-06-01" }, config: "./examples/tumugi_config_example.rb")
   end
 end
