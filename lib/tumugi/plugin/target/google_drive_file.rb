@@ -72,7 +72,7 @@ module Tumugi
         elsif files.size == 1
           files.first
         else
-          raise Tumugi::TumugiError.new("Multiple files find for query: '#{query}'")
+          raise Tumugi::TumugiError.new("Multiple files find for query: #{query}")
         end
       end
     end
