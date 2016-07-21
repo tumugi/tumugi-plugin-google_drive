@@ -4,7 +4,6 @@ require 'tumugi/cli'
 class Tumugi::Plugin::GoogleDriveCLITest < Tumugi::Test::TumugiTestCase
   examples = {
     'example' => ['example.rb', 'task1'],
-    'example2' => ['example2.rb', 'task1'],
   }
 
   setup do
