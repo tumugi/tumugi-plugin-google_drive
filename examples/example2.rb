@@ -1,10 +1,11 @@
 task :task1 do
   param :day, type: :time, auto_bind: true, required: true
+  param :seed, type: :string, auto_bind: true, required: true
   requires :folder
 
   output do
     target(:google_drive_file,
-          name: "test_#{day.strftime('%Y%m%d%H%M')}.txt",
+          name: "test_#{day.strftime('%Y%m%d%H%M')}_#{seed}.txt",
           parents: input.folder_id)
   end
 
@@ -15,6 +16,5 @@ task :task1 do
 end
 
 task :folder, type: :google_drive_folder do
-  folder_id "0B7nGp5dHlbK7akttY0haVUNSeGM"
-  name "folder"
+  name "existing_folder"
 end
