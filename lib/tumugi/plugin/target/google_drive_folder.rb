@@ -9,9 +9,9 @@ module Tumugi
 
       attr_reader :folder_id, :name, :parents
 
-      def initialize(folder_id: nil, name: nil, parents: nil, fs: nil)
+      def initialize(folder_id: nil, name:, parents: nil, fs: nil)
         @fs = fs unless fs.nil?
-        @folder_id = folder_id || self.fs.generate_file_id
+        @folder_id = folder_id
         @name = name
         @parents = parents
       end
@@ -21,13 +21,46 @@ module Tumugi
       end
 
       def exist?
-        fs.exist?(folder_id)
+        if folder_id
+          fs.exist?(folder_id)
+        else
+          !!find_by_name(name)
+        end
+      end
+
+      def mkdir
+        fid = folder_id || fs.generate_file_id
+        fs.mkdir(name, folder_id: fid, parents: parents)
+        @folder_id = fid
       end
 
       def to_s
         s = "folder_id: #{folder_id}, name: #{name}"
         s += ", parents: #{parents}" if parents
         s
+      end
+
+      private
+
+      def find_by_name(n)
+        query =  "name='#{n}'"
+        ps = parents
+        if parents.is_a?(String)
+          ps = [parents]
+        end
+        if parents
+          query += " and ("
+          query += "#{ps.map{|p| "'#{p}' in parents"}.join(" or ")}"
+          query += ") and mime_type = '#{Tumugi::Plugin::GoogleDrive::FileSystem::MIME_TYPE_FOLDER}'"
+        end
+        files = fs.list_files(query: query, page_size: 2).files
+        if files.size == 0
+          nil
+        elsif files.size == 1
+          files.first
+        else
+          raise Tumugi::TumugiError.new("Multiple files find for query: #{query}")
+        end
       end
     end
   end

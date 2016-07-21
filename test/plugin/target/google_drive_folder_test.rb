@@ -7,14 +7,14 @@ class Tumugi::Plugin::GoogleDriveFolderTargetTest < Test::Unit::TestCase
       target = Tumugi::Plugin::GoogleDriveFolderTarget.new(name: 'test')
       assert_equal('test', target.name)
       assert_nil(target.parents)
-      assert_match(/^[0-9a-zA-Z]{28}$/, target.folder_id)
+      assert_nil(target.folder_id)
     end
 
     test "with name and parents" do
       target = Tumugi::Plugin::GoogleDriveFolderTarget.new(name: 'test', parents: 'parent')
       assert_equal('test', target.name)
       assert_equal('parent', target.parents)
-      assert_match(/^[0-9a-zA-Z]{28}$/, target.folder_id)
+      assert_nil(target.folder_id)
     end
 
     test "with name and parents and file_id" do
@@ -25,10 +25,19 @@ class Tumugi::Plugin::GoogleDriveFolderTargetTest < Test::Unit::TestCase
     end
   end
 
-  test "exist?" do
-    target = Tumugi::Plugin::GoogleDriveFolderTarget.new(name: 'folder1')
-    folder1 = target.fs.mkdir('test', folder_id: target.folder_id)
-    readable_target = Tumugi::Plugin::GoogleDriveFolderTarget.new(folder_id: folder1.id)
-    assert_true(readable_target.exist?)
+  sub_test_case "exist?" do
+    test "match by folder_id" do
+      fs = Tumugi::Plugin::GoogleDrive::FileSystem.new(Tumugi.config.section('google_drive'))
+      folder1 = fs.mkdir('test', folder_id: fs.generate_file_id)
+      target = Tumugi::Plugin::GoogleDriveFolderTarget.new(folder_id: folder1.id, name: folder1.name)
+      assert_true(target.exist?)
+    end
+
+    test "match by name" do
+      target = Tumugi::Plugin::GoogleDriveFolderTarget.new(name: SecureRandom.uuid)
+      assert_false(target.exist?)
+      target.fs.mkdir(target.name)
+      assert_true(target.exist?)
+    end
   end
 end

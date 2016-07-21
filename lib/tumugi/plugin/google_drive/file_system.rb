@@ -113,6 +113,14 @@ module Tumugi
           process_error($!)
         end
 
+        def list_files(query:, order_by: "name", spaces: "drive", fields: "next_page_token, files(id, name, parents, mime_type)", page_size: 100, page_token: nil)
+          # https://developers.google.com/drive/v3/reference/files/list
+          # https://developers.google.com/drive/v3/web/search-parameters
+          client.list_files(q: query, order_by: order_by, spaces: spaces, fields: fields, page_size: page_size, page_token: page_token)
+        rescue
+          process_error($!)
+        end
+
         private
 
         def save_config(config)

@@ -90,4 +90,49 @@ class Tumugi::Plugin::GoogleDrive::FileSystemTest < Test::Unit::TestCase
     id = @fs.generate_file_id
     assert_match(/^[0-9a-zA-Z]{28}$/, id)
   end
+
+  sub_test_case "list_files" do
+    test "should return matched files" do
+      names = [ SecureRandom.uuid, SecureRandom.uuid ]
+      file_ids = []
+      names.each do |name|
+        f = @fs.put_string(name, name)
+        file_ids << f.id
+      end
+      query = names.map{ |n| "name='#{n}'" }.join(" or ")
+
+      files = []
+      page_token = nil
+      begin
+        response = @fs.list_files(query: query, page_size: 1, page_token: page_token)
+        assert_equal(1, response.files.size)
+        for f in response.files
+          files << f
+        end
+        page_token = response.next_page_token
+      end while !page_token.nil?
+
+      assert_equal(2, files.size)
+      assert_equal(file_ids.sort, files.map(&:id).sort)
+    end
+
+    test "only return files in specified parent folder" do
+      name1 = SecureRandom.uuid
+      name2 = SecureRandom.uuid
+      name3 = SecureRandom.uuid
+      parents = '0B62A9ARqgG8zWS1jcUQ3SkhQdzA'
+
+      file1 = @fs.put_string(name1, name1, parents: parents)
+      file2 = @fs.put_string(name2, name2, parents: parents)
+      @fs.put_string(name3, name3)
+
+      response = @fs.list_files(query: "'#{parents}' in parents and (name='#{name1}' or name='#{name2}' or name='#{name3}')", page_size: 3)
+      assert_nil(response.next_page_token)
+
+      files = response.files
+      assert_equal(2, files.size)
+      assert_equal([file1.id, file2.id].sort, files.map(&:id).sort)
+      assert_equal([parents], files.map(&:parents).flatten.uniq)
+    end
+  end
 end

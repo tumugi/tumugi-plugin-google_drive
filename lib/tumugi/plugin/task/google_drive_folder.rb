@@ -19,7 +19,7 @@ module Tumugi
           log "skip: #{output} is already exists"
         else
           log "create folder: #{output}"
-          output.fs.mkdir(name, folder_id: output.folder_id, parents: output.parents)
+          output.mkdir
         end
       end
     end
