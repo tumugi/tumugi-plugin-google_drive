@@ -1,10 +1,18 @@
 # Change Log
 
-## [v0.2.0](https://github.com/tumugi/tumugi-plugin-google_drive/tree/v0.2.0) (2016-07-19)
+## [v0.3.0](https://github.com/tumugi/tumugi-plugin-google_drive/tree/v0.3.0) (2016-08-02)
+[Full Changelog](https://github.com/tumugi/tumugi-plugin-google_drive/compare/v0.2.0...v0.3.0)
+
+**Implemented enhancements:**
+
+- \[Breaking Change\] Support match by name [\#12](https://github.com/tumugi/tumugi-plugin-google_drive/pull/12) ([hakobera](https://github.com/hakobera))
+
+## [v0.2.0](https://github.com/tumugi/tumugi-plugin-google_drive/tree/v0.2.0) (2016-07-18)
 [Full Changelog](https://github.com/tumugi/tumugi-plugin-google_drive/compare/v0.1.0...v0.2.0)
 
 **Merged pull requests:**
 
+- Prepare release for 0.2.0 [\#11](https://github.com/tumugi/tumugi-plugin-google_drive/pull/11) ([hakobera](https://github.com/hakobera))
 - Update README [\#10](https://github.com/tumugi/tumugi-plugin-google_drive/pull/10) ([hakobera](https://github.com/hakobera))
 - Update tumugi to 0.6 [\#9](https://github.com/tumugi/tumugi-plugin-google_drive/pull/9) ([hakobera](https://github.com/hakobera))
 

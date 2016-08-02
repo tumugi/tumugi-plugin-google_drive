@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name          = "tumugi-plugin-google_drive"
-  spec.version       = "0.2.0"
+  spec.version       = "0.3.0"
   spec.authors       = ["Kazuyuki Honda"]
   spec.email         = ["hakobera@gmail.com"]
 
