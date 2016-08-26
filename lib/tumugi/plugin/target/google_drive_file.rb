@@ -53,6 +53,10 @@ module Tumugi
         s
       end
 
+      def url
+        "https://drive.google.com/file/d/#{file_id}/view?usp=sharing"
+      end
+
       private
 
       def find_by_name(n)

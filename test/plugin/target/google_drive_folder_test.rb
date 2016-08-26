@@ -40,4 +40,9 @@ class Tumugi::Plugin::GoogleDriveFolderTargetTest < Test::Unit::TestCase
       assert_true(target.exist?)
     end
   end
+
+  test "url" do
+    target = Tumugi::Plugin::GoogleDriveFolderTarget.new(name: 'test')
+    assert_equal("https://drive.google.com/folderview?id=#{target.folder_id}&usp=sharing", target.url)
+  end
 end
