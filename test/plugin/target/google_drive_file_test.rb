@@ -97,4 +97,8 @@ class Tumugi::Plugin::GoogleDriveFileTargetTest < Test::Unit::TestCase
       end
     end
   end
+
+  test "url" do
+    assert_equal("https://drive.google.com/file/d/#{@target.file_id}/view?usp=sharing", @target.url)
+  end
 end

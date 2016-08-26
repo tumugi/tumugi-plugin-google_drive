@@ -40,6 +40,10 @@ module Tumugi
         s
       end
 
+      def url
+        "https://drive.google.com/folderview?id=#{folder_id}&usp=sharing"
+      end
+
       private
 
       def find_by_name(n)
