@@ -1,4 +1,5 @@
 require 'google/apis/drive_v3'
+
 require 'tumugi/error'
 
 Tumugi::Config.register_section('google_drive', :project_id, :client_email, :private_key, :private_key_file)
@@ -7,7 +8,6 @@ module Tumugi
   module Plugin
     module GoogleDrive
       class FileSystem
-
         MIME_TYPE_FOLDER = 'application/vnd.google-apps.folder'
 
         def initialize(config)
@@ -15,7 +15,7 @@ module Tumugi
         end
 
         def exist?(file_id)
-          client.get_file(file_id, options: request_options)
+          get_file_metadata(file_id, fields: 'id')
           true
         rescue => e
           return false if e.respond_to?(:status_code) && e.status_code == 404
@@ -39,7 +39,7 @@ module Tumugi
             parents: parents,
             id: folder_id
           })
-          file = client.create_file(file_metadata, options: request_options)
+          file = client.create_file(file_metadata, fields: "*", options: request_options)
           wait_until { exist?(file.id) }
           file
         rescue
@@ -47,7 +47,7 @@ module Tumugi
         end
 
         def directory?(file_id)
-          file = client.get_file(file_id, options: request_options)
+          file = get_file_metadata(file_id)
           file.mime_type == MIME_TYPE_FOLDER
         rescue
           process_error($!)
@@ -72,12 +72,13 @@ module Tumugi
           process_error($!)
         end
 
-        def upload(media, name, content_type: nil, file_id: nil, parents: nil)
+        def upload(media, name, content_type: nil, file_id: nil, parents: nil, mime_type: nil)
           parents = [parents] if parents.is_a?(String)
           file_metadata = Google::Apis::DriveV3::File.new({
             id: file_id,
             name: name,
-            parents: parents
+            parents: parents,
+            mime_type: mime_type
           })
           file = client.create_file(file_metadata, upload_source: media, content_type: content_type, options: request_options)
           wait_until { exist?(file.id) }
@@ -91,11 +92,29 @@ module Tumugi
           upload(media, name, content_type: content_type, file_id: file_id, parents: parents)
         end
 
-        def download(file_id, download_path: nil, mode: 'r', &block)
+        def download(file_id, download_path: nil, mode: 'r', mime_type: nil, &block)
+          if !exist?(file_id)
+            raise Tumugi::FileSystemError.new("#{file_id} does not exist")
+          end
+
           if download_path.nil?
             download_path = Tempfile.new('tumugi_google_drive_file_system').path
           end
-          client.get_file(file_id, download_dest: download_path, options: request_options)
+
+          file = get_file_metadata(file_id)
+          if google_drive_document?(file.mime_type)
+            # If file is Google Drive Document, use export_file
+            # https://developers.google.com/drive/v3/web/manage-downloads#downloading_google_documents
+            if mime_type.nil?
+              raise Tumugi::FileSystemError.new("mime_type is required because file #{file_id} is Google Drive Document")
+            end
+            client.export_file(file_id, mime_type, download_dest: download_path, options: request_options)
+          else
+            # If file is not Google Drive Document, use get_file
+            # https://developers.google.com/drive/v3/web/manage-downloads#downloading_a_file
+            client.get_file(file_id, download_dest: download_path, options: request_options)
+          end
+
           wait_until { File.exist?(download_path) }
 
           if block_given?
@@ -103,6 +122,7 @@ module Tumugi
           else
             File.open(download_path, mode)
           end
+          file
         rescue
           process_error($!)
         end
@@ -119,6 +139,14 @@ module Tumugi
           client.list_files(q: query, order_by: order_by, spaces: spaces, fields: fields, page_size: page_size, page_token: page_token)
         rescue
           process_error($!)
+        end
+
+        def get_file_metadata(file_id, fields: "*")
+          client.get_file(file_id, fields: fields, options: request_options)
+        end
+
+        def google_drive_document?(mime_type)
+          !!(mime_type && mime_type.start_with?("application/vnd.google-apps."))
         end
 
         private
@@ -173,16 +201,22 @@ module Tumugi
             begin
               if err.body.nil?
                 reason = err.status_code.to_s
-                errors = "HTTP Status: #{err.status_code}\nHeaders: #{err.header.inspect}"
+                errors = "HTTP Status: #{err.status_code}, Headers: #{err.header.inspect}"
               else
+                p err.body
                 jobj = JSON.parse(err.body)
                 error = jobj["error"]
-                reason = error["errors"].map{|e| e["reason"]}.join(",")
-                errors = error["errors"].map{|e| e["message"] }.join("\n")
+                errors = "HTTP Status: #{err.status_code}, Headers: #{err.header.inspect}, Body: "
+                if error["errors"]
+                  reason = error["errors"].map{|e| e["reason"]}.join(",")
+                  errors += error["errors"].map{|e| e["message"] }.join(". ")
+                else
+                  errors += error["message"]
+                end
               end
             rescue JSON::ParserError
               reason = err.status_code.to_s
-              errors = "HTTP Status: #{err.status_code}\nHeaders: #{err.header.inspect}\nBody:\n#{err.body}"
+              errors = "HTTP Status: #{err.status_code}, Headers: #{err.header.inspect}, Body: #{err.body}"
             end
             raise Tumugi::FileSystemError.new(errors, reason)
           else

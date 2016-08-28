@@ -135,4 +135,14 @@ class Tumugi::Plugin::GoogleDrive::FileSystemTest < Test::Unit::TestCase
       assert_equal([parents], files.map(&:parents).flatten.uniq)
     end
   end
+
+  test 'google_drive_document?' do
+    assert_true(@fs.google_drive_document?('application/vnd.google-apps.document'))
+    assert_true(@fs.google_drive_document?('application/vnd.google-apps.presentation'))
+    assert_true(@fs.google_drive_document?('application/vnd.google-apps.spreadsheet'))
+
+    assert_false(@fs.google_drive_document?(nil))
+    assert_false(@fs.google_drive_document?('text/plain'))
+    assert_false(@fs.google_drive_document?('image/png'))
+  end
 end

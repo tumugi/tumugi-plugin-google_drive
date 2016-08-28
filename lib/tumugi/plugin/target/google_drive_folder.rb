@@ -24,7 +24,7 @@ module Tumugi
         if folder_id
           fs.exist?(folder_id)
         else
-          !!find_by_name(name)
+          !find_by_name(name).nil?
         end
       end
 
@@ -41,7 +41,9 @@ module Tumugi
       end
 
       def url
-        "https://drive.google.com/folderview?id=#{folder_id}&usp=sharing"
+        return nil if folder_id.nil?
+        folder = fs.get_file_metadata(folder_id)
+        folder.web_view_link
       end
 
       private
@@ -55,7 +57,7 @@ module Tumugi
         if parents
           query += " and ("
           query += "#{ps.map{|p| "'#{p}' in parents"}.join(" or ")}"
-          query += ") and mime_type = '#{Tumugi::Plugin::GoogleDrive::FileSystem::MIME_TYPE_FOLDER}'"
+          query += ") and mime_type = '#{Tumugi::Plugin::GoogleDrive::MimeTypes::DRIVE_FOLDER}'"
         end
         files = fs.list_files(query: query, page_size: 2).files
         if files.size == 0

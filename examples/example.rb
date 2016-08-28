@@ -6,8 +6,8 @@ task :task1 do
 
   output do
     target(:google_drive_file,
-          name: "test_#{day.strftime('%Y%m%d%H%M')}_#{seed}.txt",
-          parents: input.folder_id)
+            name: "test_#{day.strftime('%Y%m%d%H%M')}_#{seed}.txt",
+            parents: input.folder_id)
   end
 
   run do

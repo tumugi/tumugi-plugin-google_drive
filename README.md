@@ -22,15 +22,18 @@ And then execute `bundle install`
 
 #### Parameters
 
-| name    | type                   | required? | default | description         |
-|---------|------------------------|-----------|---------|---------------------|
-| name    | string                 | required  |         | Filename            |
-| file_id | string                 | optional  |         | File ID             |
-| parents | string or string array | optional  |         | Parent folder ID(s) |
+| name      | type                   | required? | default | description         |
+|-----------|------------------------|-----------|---------|---------------------|
+| name      | string                 | required  |         | Filename            |
+| file_id   | string                 | optional  |         | File ID             |
+| parents   | string or string array | optional  |         | Parent folder ID(s) |
+| mime_type | string                 | optional  |         | MIME type of file |
+
+`mime_type` is specifiy default mime_type value for `GoogleDriveFileTarget#open(mode="r", mime_type: @mime_type, &block)` method.
 
 #### Examples
 
-Create Google Drive file in folder named `xyz`, which content is "done"
+##### Create Google Drive file in folder named `xyz`, which content is "done"
 
 ```rb
 task :task1 do
@@ -38,13 +41,34 @@ task :task1 do
 
   output do
     target(:google_drive_file,
-          name: "test_#{day.strftime('%Y%m%d')}.txt",
-          parents: "xyz")
+            name: "test_#{day.strftime('%Y%m%d')}.txt",
+            parents: "xyz")
   end
 
   run do
     log "task1#run"
     output.open("w") {|f| f.puts("done") }
+  end
+end
+```
+
+##### Upload CSV file and convert it to Google Sheets file
+
+```rb
+task :task1 do
+  param :day, type: :time, auto_bind: true, required: true
+
+  output do
+    target(:google_drive_file,
+            name: "test_#{day.strftime('%Y%m%d')}.csv",
+            mime_type: "application/vnd.google-apps.spreadsheet")
+  end
+
+  run do
+    log "task1#run"
+    output.open("w") {|f| f.puts("header1,header2"); f.puts("value1,value2") }
+    # You can also specify mime_type by argument of open method.
+    # output.open("w", mime_type: "application/vnd.google-apps.spreadsheet") { ... }
   end
 end
 ```
