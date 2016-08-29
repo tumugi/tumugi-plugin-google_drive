@@ -13,6 +13,7 @@ class Tumugi::Plugin::GoogleDriveFileTargetTest < Test::Unit::TestCase
       assert_nil(target.parents)
       assert_nil(target.file_id)
       assert_equal(target.path, target.file_id)
+      assert_nil(target.mime_type)
     end
 
     test "with name and parents" do
@@ -21,6 +22,7 @@ class Tumugi::Plugin::GoogleDriveFileTargetTest < Test::Unit::TestCase
       assert_equal('parent', target.parents)
       assert_nil(target.file_id)
       assert_equal(target.path, target.file_id)
+      assert_nil(target.mime_type)
     end
 
     test "with name and parents and file_id" do
@@ -29,6 +31,16 @@ class Tumugi::Plugin::GoogleDriveFileTargetTest < Test::Unit::TestCase
       assert_equal('parent', target.parents)
       assert_equal('a'*28, target.file_id)
       assert_equal(target.path, target.file_id)
+      assert_nil(target.mime_type)
+    end
+
+    test "with name and parents and file_id and mime_type" do
+      target = Tumugi::Plugin::GoogleDriveFileTarget.new(name: 'test', parents: 'parent', file_id: 'a'*28, mime_type: 'text/plain')
+      assert_equal('test', target.name)
+      assert_equal('parent', target.parents)
+      assert_equal('a'*28, target.file_id)
+      assert_equal(target.path, target.file_id)
+      assert_equal('text/plain', target.mime_type)
     end
   end
 
@@ -91,6 +103,17 @@ class Tumugi::Plugin::GoogleDriveFileTargetTest < Test::Unit::TestCase
       end
     end
 
+    test "write and read with mime_type" do
+      target = Tumugi::Plugin::GoogleDriveFileTarget.new(name: "#{SecureRandom.uuid}.csv")
+
+      target.open("w", mime_type: "application/vnd.google-apps.spreadsheet") do |f|
+        f.puts "head1,head2\nvalue1,value2"
+      end
+      target.open("r", mime_type: "text/csv") do |f|
+        assert_equal("head1,head2\r\nvalue1,value2", f.read)
+      end
+    end
+
     test "raise error when mode is invalid" do
       assert_raise(Tumugi::TumugiError) do
         @target.open("z")
@@ -99,6 +122,9 @@ class Tumugi::Plugin::GoogleDriveFileTargetTest < Test::Unit::TestCase
   end
 
   test "url" do
-    assert_equal("https://drive.google.com/file/d/#{@target.file_id}/view?usp=sharing", @target.url)
+    @target.open("w") do |f|
+      f.puts("test")
+    end
+    assert_equal("https://drive.google.com/file/d/#{@target.file_id}/view?usp=drivesdk", @target.url)
   end
 end
