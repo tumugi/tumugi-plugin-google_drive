@@ -1,11 +1,28 @@
 # Change Log
 
+## [v0.4.0](https://github.com/tumugi/tumugi-plugin-google_drive/tree/v0.4.0) (2016-08-29)
+[Full Changelog](https://github.com/tumugi/tumugi-plugin-google_drive/compare/v0.3.0...v0.4.0)
+
+**Implemented enhancements:**
+
+- Support convert a file to the corresponding Google Docs format [\#16](https://github.com/tumugi/tumugi-plugin-google_drive/issues/16)
+- Add method to get sharable link for Google Drive [\#13](https://github.com/tumugi/tumugi-plugin-google_drive/issues/13)
+
+**Merged pull requests:**
+
+- Support file type convert when import/export. [\#17](https://github.com/tumugi/tumugi-plugin-google_drive/pull/17) ([hakobera](https://github.com/hakobera))
+- Add url method to GoogleDriveFileTarget and GoogleDriveFolderTarget [\#15](https://github.com/tumugi/tumugi-plugin-google_drive/pull/15) ([hakobera](https://github.com/hakobera))
+
 ## [v0.3.0](https://github.com/tumugi/tumugi-plugin-google_drive/tree/v0.3.0) (2016-08-02)
 [Full Changelog](https://github.com/tumugi/tumugi-plugin-google_drive/compare/v0.2.0...v0.3.0)
 
 **Implemented enhancements:**
 
 - \[Breaking Change\] Support match by name [\#12](https://github.com/tumugi/tumugi-plugin-google_drive/pull/12) ([hakobera](https://github.com/hakobera))
+
+**Merged pull requests:**
+
+- Prepare release for 0.3.0 [\#14](https://github.com/tumugi/tumugi-plugin-google_drive/pull/14) ([hakobera](https://github.com/hakobera))
 
 ## [v0.2.0](https://github.com/tumugi/tumugi-plugin-google_drive/tree/v0.2.0) (2016-07-18)
 [Full Changelog](https://github.com/tumugi/tumugi-plugin-google_drive/compare/v0.1.0...v0.2.0)
