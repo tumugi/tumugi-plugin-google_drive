@@ -80,7 +80,7 @@ module Tumugi
             parents: parents,
             mime_type: mime_type
           })
-          file = client.create_file(file_metadata, upload_source: media, content_type: content_type, options: request_options)
+          file = client.create_file(file_metadata, fields: "*", upload_source: media, content_type: content_type, options: request_options)
           wait_until { exist?(file.id) }
           file
         rescue
@@ -203,7 +203,6 @@ module Tumugi
                 reason = err.status_code.to_s
                 errors = "HTTP Status: #{err.status_code}, Headers: #{err.header.inspect}"
               else
-                p err.body
                 jobj = JSON.parse(err.body)
                 error = jobj["error"]
                 errors = "HTTP Status: #{err.status_code}, Headers: #{err.header.inspect}, Body: "

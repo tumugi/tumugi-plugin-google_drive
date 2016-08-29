@@ -9,7 +9,7 @@ module Tumugi
     class GoogleDriveFileTarget < Tumugi::Plugin::FileSystemTarget
       Tumugi::Plugin.register_target('google_drive_file', self)
 
-      attr_reader :file_id, :name, :parents
+      attr_reader :file_id, :name, :parents, :mime_type
 
       def initialize(file_id: nil, name:, parents: nil, mime_type: nil, fs: nil)
         @fs = fs unless fs.nil?

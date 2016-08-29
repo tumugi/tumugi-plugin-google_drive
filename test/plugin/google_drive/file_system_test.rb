@@ -77,6 +77,26 @@ class Tumugi::Plugin::GoogleDrive::FileSystemTest < Test::Unit::TestCase
         assert_equal("test\n", f.read)
       end
     end
+
+    test "convert google docs <=> text" do
+      File.open('tmp/upload.csv', 'w') {|f| f.puts "head1,head2\nvalue1,value2"}
+      file = @fs.upload('tmp/upload.csv', 'upload.csv', mime_type: 'application/vnd.google-apps.spreadsheet')
+      assert_true(@fs.exist?(file.id))
+      assert_equal('application/vnd.google-apps.spreadsheet', file.mime_type)
+      @fs.download(file.id, mime_type: 'text/csv') do |f|
+        assert_equal("head1,head2\r\nvalue1,value2", f.read)
+      end
+    end
+
+    test "raise error when download google docs without mime_type" do
+      File.open('tmp/upload.txt', 'w') {|f| f.puts 'test'}
+      file = @fs.upload('tmp/upload.txt', 'upload.txt', mime_type: 'application/vnd.google-apps.document')
+      assert_true(@fs.exist?(file.id))
+      assert_equal('application/vnd.google-apps.document', file.mime_type)
+      assert_raise(Tumugi::FileSystemError) do
+        @fs.download(file.id)
+      end
+    end
   end
 
   test "upload and remove" do
