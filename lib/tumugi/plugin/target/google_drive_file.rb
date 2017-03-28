@@ -11,12 +11,14 @@ module Tumugi
 
       attr_reader :file_id, :name, :parents, :mime_type
 
-      def initialize(file_id: nil, name:, parents: nil, mime_type: nil, fs: nil)
+      def initialize(file_id: nil, name:, parents: nil, mime_type: nil, fs: nil, clean: false)
         @fs = fs unless fs.nil?
         @file_id = file_id
         @name = name
         @parents = parents
         @mime_type = mime_type
+
+        cleanup(name) if clean
 
         super(@file_id)
       end
@@ -63,6 +65,27 @@ module Tumugi
       private
 
       def find_by_name(n)
+        query = build_query(n)
+        files = fs.list_files(query: query, page_size: 2).files
+        if files.size == 0
+          nil
+        elsif files.size == 1
+          files.first
+        else
+          raise Tumugi::TumugiError.new("Multiple files find for query: #{query}")
+        end
+      end
+
+      def cleanup(n)
+        query = build_query(n)
+        begin
+          fs.list_files(query: query, page_size: 100).files.each do |f|
+            fs.remove(f.id)
+          end
+        end while fs.list_files(query: query, page_size: 1).files.size > 0
+      end
+
+      def build_query(n)
         query =  "name='#{n}'"
         ps = parents
         if parents.is_a?(String)
@@ -73,14 +96,7 @@ module Tumugi
           query += "#{ps.map{|p| "'#{p}' in parents"}.join(" or ")}"
           query += ")"
         end
-        files = fs.list_files(query: query, page_size: 2).files
-        if files.size == 0
-          nil
-        elsif files.size == 1
-          files.first
-        else
-          raise Tumugi::TumugiError.new("Multiple files find for query: #{query}")
-        end
+        query
       end
     end
   end
